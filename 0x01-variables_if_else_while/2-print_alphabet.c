@@ -6,9 +6,9 @@
 int main(void)
 {
 	char alphabets[26] = "abcdefhijklmnopqrstuvwxyz";
-	int i;
+	int i = 0;
 
-	while (i < 26)
+	while (alphabets[i] != '\0')
 	{
 		putchar(alphabets[i]);
 		i++;
