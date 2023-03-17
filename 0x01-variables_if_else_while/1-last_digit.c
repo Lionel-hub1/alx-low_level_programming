@@ -5,7 +5,7 @@
  * main - Print random number and say its last digit
  * Return: - Always return (0)
  */
-int main(0)
+int main(void)
 {
 	int n;
 
