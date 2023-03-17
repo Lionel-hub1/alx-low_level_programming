@@ -5,7 +5,7 @@
  */
 int main(void)
 {
-	char alphabets[26] = "abcdefhijklmnopqrstuvwxyz";
+	char alphabets[26] = "abcdefghijklmnopqrstuvwxyz";
 	int i = 0;
 
 	while (alphabets[i] != '\0')
