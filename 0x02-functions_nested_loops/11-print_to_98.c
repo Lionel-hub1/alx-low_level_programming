@@ -1,24 +1,9 @@
 #include <stdio.h>
 #include "main.h"
 /**
- * print_number - Helps to print numbers as expected
  * print_to_98 - This program prints all natural numbers from n to 98
  * @n: print from this number
  */
-void print_number(int n)
-{
-	if (n < 0)
-	{
-		_putchar('-');
-		n = -n;
-	}
-	if (n > 9)
-	{
-		print_number(n / 10);
-	}
-	_putchar(n % 10 + '0');
-}
-
 void print_to_98(int n)
 {
 	int i;
@@ -43,4 +28,22 @@ void print_to_98(int n)
 	}
 	print_number(98);
 	_putchar('\n');
+}
+
+/**
+ * print_number - helps to print every number as expected
+ * @n: Is the number to be printed
+ */
+void print_number(int n)
+{
+	if (n < 0)
+	{
+		_putchar('-');
+		n = -n;
+	}
+	if (n > 9)
+	{
+		print_number(n / 10);
+	}
+	_putchar(n % 10 + '0');
 }
