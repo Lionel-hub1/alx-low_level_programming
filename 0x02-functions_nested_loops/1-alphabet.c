@@ -1,19 +1,16 @@
-#include <stdio.h>
+#include "main.h"
 /**
  * main - The program prints alphabets in lowecase
  * Return: it returns 0
  */
-int main(void)
+void print_alphabet(void)
 {
 	int i = 0;
-#include "main.h"
 	char alphabets[] = "abcdefghijklmnopqrstuvwxyz\n";
 
 	while (alphabets[i] != '\0')
 	{
-		putchar(alphabets[i]);
+		_putchar(alphabets[i]);
 		i++;
 	}
-
-	return (0);
 }
