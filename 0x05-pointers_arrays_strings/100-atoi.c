@@ -5,38 +5,36 @@
  * @s: string to convert
  * Return: int
  */
-
 int _atoi(char *s)
 {
-	int result = 0;
-	int sign = 1;
-	int i = 0;
+	int i, d, n, length, f, digit;
 
-	while (s[i] == ' ')
+	i = 0;
+	d = 0;
+	n = 0;
+	length = 0;
+	f = 0;
+	digit = 0;
+	while (s[length] != '\0')
+		length++;
+	while (i < length && f == 0)
 	{
-		i++;
-	}
-
-	if (s[i] == '-')
-	{
-		sign = -1;
-		i++;
-	}
-
-	else if (s[i] == '+')
-	{
-		i++;
-	}
-
-	while (s[i] >= '0' && s[i] <= '9')
-	{
-		if (result > (INT_MAX - (s[i] - '0')) / 10)
+		if (s[i] == '-')
+			++d;
+		if (s[i] >= '0' && s[i] <= '9')
 		{
-			return (sign == 1 ? INT_MAX : INT_MIN);
+			digit = s[i] - '0';
+			if (d % 2)
+				digit = -digit;
+			n = n * 10 + digit;
+			f = 1;
+			if (s[i + 1] < '0' || s[i + 1] > '9')
+				break;
+			f = 0;
 		}
-		result = result * 10 + (s[i] - '0');
 		i++;
 	}
-
-	return (result * sign);
+	if (f == 0)
+		return (0);
+	return (n);
 }
