@@ -2,28 +2,26 @@
 
 int _atoi(char *s)
 {
-    int result = 0;
-    int sign = 1;
-    int i = 0;
+	int result = 0;
+	int sign = 1;
+	int i = 0;
 
-    // handle leading whitespace
-    while (s[i] == ' ')
-    {
-        i++;
-    }
+	while (s[i] == ' ')
+	{
+		i++;
+	}
 
-    // handle sign
-    if (s[i] == '-')
-    {
-        sign = -1;
-        i++;
-    }
-    else if (s[i] == '+')
-    {
-        i++;
-    }
+	if (s[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
 
-    // convert string to integer
+	else if (s[i] == '+')
+	{
+		i++;
+	}
+
 	while (s[i] >= '0' && s[i] <= '9')
 	{
 		if (result > (INT_MAX - (s[i] - '0')) / 10)
@@ -34,5 +32,5 @@ int _atoi(char *s)
 		i++;
 	}
 
-	return result * sign;
+	return (result * sign);
 }
