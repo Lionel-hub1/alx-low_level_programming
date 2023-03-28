@@ -1,5 +1,11 @@
 #include "main.h"
 
+/**
+ * _atoi - transform string to int
+ * @s: string to convert
+ * Return: int
+ */
+
 int _atoi(char *s)
 {
 	int result = 0;
@@ -26,7 +32,7 @@ int _atoi(char *s)
 	{
 		if (result > (INT_MAX - (s[i] - '0')) / 10)
 		{
-			return sign == 1 ? INT_MAX : INT_MIN;
+			return (sign == 1 ? INT_MAX : INT_MIN);
 		}
 		result = result * 10 + (s[i] - '0');
 		i++;
