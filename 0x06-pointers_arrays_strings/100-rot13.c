@@ -22,6 +22,7 @@ char *rot13(char *string)
 				break;
 			}
 		}
+		i++;
 	}
 
 	return (string);
