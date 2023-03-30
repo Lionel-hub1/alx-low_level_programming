@@ -11,7 +11,8 @@ char *rot13(char *string)
 	char using[] = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm";
 	int i, j;
 
-	for (i = 0; string[i] != '\0'; i++)
+	i = 0;
+	while (string[i] != '\0')
 	{
 		for (j = 0; j < 52; j++)
 		{
@@ -21,6 +22,7 @@ char *rot13(char *string)
 				break;
 			}
 		}
+		i++;
 	}
 
 	return (string);
