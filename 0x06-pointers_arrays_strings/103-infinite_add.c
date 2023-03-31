@@ -10,18 +10,18 @@ void rev_string(char *n)
 {
 	int len = 0;
 	int i;
-	
+
 	while (n[len] != '\0')
 		len++;
-	
+
 	for (i = 0; i < len / 2; i++)
 	{
 		char temp = n[i];
+
 		n[i] = n[len - i - 1];
 		n[len - i - 1] = temp;
 	}
 }
-
 /**
  * infinite_add - This function adds 2 numbers together
  * @n1: First number to add
