@@ -2,7 +2,7 @@
 
 /**
  * nested_helper - This function helps to_aqrt_recursion calculate the sq-root
- * @n: The number to find it's root
+ * @number: The number to find it's root
  * @guess: The current guess for
  * Return: The calculated square root
  */
