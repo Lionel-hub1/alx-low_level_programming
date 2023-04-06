@@ -13,11 +13,11 @@ int nested_helper(int number, int guess)
 
 	/* If the square > number, no natural sq-root */
 	if (result > number)
-		return -1;
+		return (-1);
 	else if (result == number)
-		return guess;
+		return (guess);
 	else
-		return nested_helper(number, guess + 1);
+		return (nested_helper(number, guess + 1));
 }
 
 /**
@@ -28,6 +28,6 @@ int nested_helper(int number, int guess)
 int _sqrt_recursion(int n)
 {
 	if (n < 0)
-		return -1;
-	return nested_helper(n, 0);
+		return (-1);
+	return (nested_helper(n, 0));
 }
