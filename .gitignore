@@ -8,3 +8,5 @@
 0x07-pointers_arrays_strings/*main.ci
 0x08-recursion/_putchar.c
 0x08-recursion/*main.c
+0x09-static_libraries/_putchar.c
+0x09-static_libraries/*main.c
