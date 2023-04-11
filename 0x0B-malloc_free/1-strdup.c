@@ -9,14 +9,15 @@ char *_strdup(char *str)
 {
 	char *dup_ptr;
 	int length, i;
+	
+	if (str == NULL)
+		return (NULL);
 
 	length = 0;
 	/*As long as the string havent ended(on last '\0') increment length*/
 	while (str[length] != '\0')
 		length++;
-	if (str == NULL)
-		return (NULL);
-
+	
 	dup_ptr = malloc(sizeof(char) * ++length);
 	if (dup_ptr == NULL)
 		return (NULL);
