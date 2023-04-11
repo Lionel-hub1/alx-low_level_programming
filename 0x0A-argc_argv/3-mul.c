@@ -5,6 +5,7 @@
  * main - This function multiplies two numbers
  * @argc: The number of arguments
  * @argv: The array of arguments
+ * Return: The product of bot numbers
  */
 int main(int argc, char *argv[])
 {
