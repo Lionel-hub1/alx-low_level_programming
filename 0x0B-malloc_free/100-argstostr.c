@@ -13,12 +13,12 @@ char *argstostr(int ac, char **av)
 
 	if (ac == 0 || av == NULL)
 		return (NULL);
-	
+
 	for (i = 0; i < ac; i++)
 	{
 		if (av[i] == NULL)
 			return (NULL);
-		
+
 		len += strlen(av[i]) + 1;
 	}
 
