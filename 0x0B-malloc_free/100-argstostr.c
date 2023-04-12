@@ -8,35 +8,35 @@
  */
 char *argstostr(int ac, char **av)
 {
-	int i, j, len = 0;
-	char *str, *p;
+	int i, j, len = 0, pos = 0;
+	char *str;
 
-	if (ac <= 0 || av == NULL)
+	if (ac == 0 || av == NULL)
 		return (NULL);
 
 	for (i = 0; i < ac; i++)
 	{
-		for (j = 0; av[i][j] != '\0'; j++)
-		{
+		for (j = 0; av[i][j]; j++)
 			len++;
-		}
-		len++;
 	}
+	len += ac;
 
-	str = malloc(len * sizeof(char));
+	str = malloc(sizeof(char) * (len + 1));
 	if (str == NULL)
 		return (NULL);
 
-	p = str;
 	for (i = 0; i < ac; i++)
 	{
-		for (j = 0; av[i][j] != '\0'; j++)
+		for (j = 0; av[i][j]; j++)
 		{
-			*p++ = av[i][j];
+			str[pos] = av[i][j];
+			pos++;
 		}
-		*p++ = '\n';
+		if (str[pos] == '\0')
+		{
+			str[pos++] = '\n';
+		}
 	}
-	*--p = '\0';
-
+	str[pos] = '\0';
 	return (str);
 }
