@@ -29,8 +29,11 @@ char *string_nconcat(char *s1, char *s2, unsigned int n)
 
 	i = 0;
 	j = 0;
-	for (; i < length1; i++)
+	while (i < length1)
+	{
 		whole[i] = s1[i];
+		i++;
+	}
 
 	while (n < length2 && i < (length1 + n))
 		whole[i++] = s2[j++];
