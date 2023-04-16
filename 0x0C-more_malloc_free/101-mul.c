@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 	if (argc != 3 || !is_valid_input(argv[1]) || !is_valid_input(argv[2]))
 	{
 		printf("Error\n");
-		return (1);
+		exit(98);
 	}
 	/* Perform the multiplication and print the result */
 	multiply(argv[1], argv[2]);
