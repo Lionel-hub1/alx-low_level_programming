@@ -1,7 +1,7 @@
 #include "lists.h"
 
 /**
- * pre_main - This function prints the following sentence before the main() executes
+ * pre_main - This function prints the sentence before the main() executes
  * Return: Nothing
  */
 void pre_main(void)
