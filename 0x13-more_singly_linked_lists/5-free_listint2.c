@@ -14,7 +14,7 @@ void free_listint2(listint_t **head)
 		return;
 
 	/* Iterate through the linked list and free each node */
-	else
+	while(*head != NULL)
 	{
 		temp = (*head)->next;
 		free(*head);
