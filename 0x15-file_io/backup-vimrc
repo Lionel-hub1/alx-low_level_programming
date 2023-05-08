@@ -1,0 +1,9 @@
+set autoindent
+set smartindent
+set tabstop=8
+set shiftwidth=8
+set noexpandtab
+set number
+autocmd BufWritePre *.rb :%s/\s\+$//e
+autocmd BufWritePre *.c :%s/\s\+$//e
+autocmd BufWritePre *.h :%s/\s\+$//e
