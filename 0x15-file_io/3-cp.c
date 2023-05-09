@@ -20,6 +20,7 @@ char *create_buffer(void)
 
 /**
  * close_file - Closes the file descriptor `fd`.
+ * @fd: Is the file descriptor
  */
 void close_file(int fd)
 {
