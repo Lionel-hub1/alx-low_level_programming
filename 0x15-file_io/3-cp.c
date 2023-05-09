@@ -1,115 +1,122 @@
 #include "main.h"
 
 /**
- * open_file - This function opens a file with the specified flags and mode
- * @filename: Is the name of the file to open
- * @flags: Is the flags to use when opening the file
- * @mode: Is the mode to use when creating the file (if applicable)
- * Return: The file descriptor of the opened file, or -1 if an error occurred
+ * allocate_buffer - This function allocates space to store the new file
+ * @filename: Is the name of the new file
+ * Return: A pointer to the allocated space
  */
-int open_file(const char *filename, int flags, mode_t mode)
+char *allocate_buffer(char *filename)
 {
-        int fd = open(filename, flags, mode);
-
-        if (fd == -1)
-                dprintf(STDERR_FILENO, "Error: Can't open file %s\n", filename);
-        return (fd);
-}
-
-/**
- * create_a_file - This function creates a file with the specified mode
- * @filename: Is the name of the file to create
- * @mode: Is the mode to use when creating the file
- * Return: 0 on success, -1 on failure
- */
-int create_a_file(const char *filename, mode_t mode)
-{
-        int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, mode);
-
-        if (fd == -1)
-                dprintf(STDERR_FILENO, "Error: Can't create file %s\n", filename);
-        return (fd);
-}
-
-/**
- * copy_data - This function copies data from one file descriptor to another
- * @source_fd: Is the file descriptor to copy data from
- * @dest_fd: Is the file descriptor to copy data to
- * Return: Number of bytes copied or -1 on failure
- */
-ssize_t copy_data(int source_fd, int dest_fd)
-{
-        char *buffer;
-        ssize_t bytes_read, bytes_written;
+	char *buffer;
 
 	buffer = malloc(sizeof(char) * BUFFER_SIZE);
+
 	if (buffer == NULL)
 	{
-		dprintf(STDERR_FILENO,
-			"Error: Can't write to fd %d\n", dest_fd);
+		/* If memory allocation fails */
+		dprintf(STDERR_FILENO, "Error: Can't allocate buffer for %s\n", filename);
 		exit(99);
 	}
-
-        while ((bytes_read = read(source_fd, buffer, BUFFER_SIZE)) > 0)
-        {
-                bytes_written = write(dest_fd, buffer, bytes_read);
-                if (bytes_written < bytes_read || bytes_written == -1)
-                {
-                        dprintf(STDERR_FILENO, "Error: Can't write to fd %d\n", dest_fd);
-                        return (-1);
-                }
-        }
-        if (bytes_read == -1)
-        {
-                dprintf(STDERR_FILENO, "Error: Can't read from fd %d\n", source_fd);
-                return (-1);
-        }
-        return (bytes_written);
+	return (buffer);
 }
 
 /**
- * copy_file - This function copies the content of a file to another file
- * @file_from: Is the source file
- * @file_to: Is the destination file
- * Return: 1 on success, -1 on failure
+ * close_file_descriptor - This function closes the file descriptor
+ * @fd: Is the file descriptor
+ * Return: void
  */
-void copy_file(const char *file_from, const char *file_to)
+void close_file_descriptor(int fd)
 {
-        int source_fd, dest_fd, ret_val;
-        struct stat st;
+	int result;
 
-        source_fd = open_file(file_from, O_RDONLY, 0);
-        fstat(source_fd, &st);
-
-        dest_fd = create_a_file(file_to, 0664);
-
-        copy_data(source_fd, dest_fd);
-
-        ret_val = close(source_fd);
-        if (ret_val == -1)
-                dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", source_fd);
-
-        ret_val = close(dest_fd);
-        if (ret_val == -1)
-                dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", dest_fd);
-
-        exit(EXIT_SUCCESS);
+	result = close(fd);
+	if (result == -1)
+	{
+		/* If closing file descriptor fails */
+		dprintf(STDERR_FILENO, "Error: Can't close file descriptor %d\n", fd);
+		exit(100);
+	}
 }
 
 /**
- * main - Is the entry point of this program
- * @argc: Is the number of arguments(number of arguments)
- * @argv: Is the argument vector(array of all arguments)
- * Return: 0 on success, non-zero on failure
+ * copy_file_content - This function copies file content to another file
+ * @source_file_descriptor: The file descriptor of the source file
+ * @destination_file_descriptor: The file descriptor of the destination file
+ * @buffer: The buffer to use for reading and writing
+ * @file_from: The name of the source file
+ * @file_to: The name of the destination file
+ * Return: void
+ */
+void copy_file_content(int source_file_descriptor,
+		int destination_file_descriptor, char *buffer,
+		char *file_from, char *file_to)
+{
+	ssize_t read_size, write_size;
+
+	do {
+		/* Read the contents of the input file into the buffer */
+		read_size = read(source_file_descriptor, buffer, BUFFER_SIZE);
+
+		/* Check for read errors */
+		if (source_file_descriptor == -1 || read_size == -1)
+		{
+			dprintf(STDERR_FILENO,
+					"Error: Can't read from file %s\n", file_from);
+			free(buffer);
+			exit(98);
+		}
+
+		/* Write the contents of the buffer to the output file */
+		write_size = write(destination_file_descriptor, buffer, read_size);
+
+		/* Check for write errors */
+		if (destination_file_descriptor == -1 || write_size == -1)
+		{
+			dprintf(STDERR_FILENO,
+					"Error: Can't write to %s\n", file_to);
+			free(buffer);
+			exit(99);
+		}
+
+		/* Open the output file in append mode */
+		destination_file_descriptor = open(file_to, O_WRONLY | O_APPEND);
+	} while (read_size > 0);
+}
+
+/**
+ * main - Entry point of the program
+ * @argc: Is the number of arguments
+ * @argv: Is the argument vector(holding array of arguments)
+ * Return: 0 on success.
  */
 int main(int argc, char *argv[])
 {
-        if (argc != 3)
-        {
-                dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
-                exit(EXIT_FAILURE);
-        }
+	int source_file_descriptor, destination_file_descriptor;
+	char *buffer;
 
-        copy_file(argv[1], argv[2]);
-        return (0);
+	/* Check for correct argument count */
+	if (argc != 3)
+	{
+		dprintf(STDERR_FILENO, "Usage: cp source_file destination_file\n");
+		exit(97);
+	}
+
+	/* Allocate buffer for destination file */
+	buffer = allocate_buffer(argv[2]);
+
+	/* Open source file and read contents into buffer */
+	source_file_descriptor = open(argv[1], O_RDONLY);
+
+	/* Create destination file and write buffer contents to it */
+	destination_file_descriptor = open(argv[2],
+			O_CREAT | O_WRONLY | O_TRUNC, 0664);
+
+	copy_file_content(source_file_descriptor,
+			destination_file_descriptor, buffer, argv[1], argv[2]);
+	/* Free buffer and close file descriptors */
+	free(buffer);
+	close_file_descriptor(source_file_descriptor);
+	close_file_descriptor(destination_file_descriptor);
+
+	return (0);
 }
