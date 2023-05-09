@@ -73,7 +73,7 @@ void copy_file(const char *file_from, const char *file_to)
 	source_fd = open_file(file_from, O_RDONLY, 0);
 	fstat(source_fd, &st);
 
-	dest_fd = create_a_file(file_to, st.st_mode & 0777);
+	dest_fd = create_a_file(file_to, 0664);
 
 	copy_data(source_fd, dest_fd);
 
