@@ -1,96 +1,115 @@
 #include "main.h"
 
-char *create_buffer(void);
-void close_file(int fd);
-void error_exit(int code, const char *message, const char *file);
+/**
+ * open_file - This function opens a file with the specified flags and mode
+ * @filename: Is the name of the file to open
+ * @flags: Is the flags to use when opening the file
+ * @mode: Is the mode to use when creating the file (if applicable)
+ * Return: The file descriptor of the opened file, or -1 if an error occurred
+ */
+int open_file(const char *filename, int flags, mode_t mode)
+{
+        int fd = open(filename, flags, mode);
+
+        if (fd == -1)
+                dprintf(STDERR_FILENO, "Error: Can't open file %s\n", filename);
+        return (fd);
+}
 
 /**
- * create_buffer - Allocates a BUFFER_SIZE-byte buffer.
- *
- * Return: A pointer to the newly-allocated buffer.
+ * create_a_file - This function creates a file with the specified mode
+ * @filename: Is the name of the file to create
+ * @mode: Is the mode to use when creating the file
+ * Return: 0 on success, -1 on failure
  */
-char *create_buffer(void)
+int create_a_file(const char *filename, mode_t mode)
 {
-	char *buffer = malloc(BUFFER_SIZE);
+        int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, mode);
 
+        if (fd == -1)
+                dprintf(STDERR_FILENO, "Error: Can't create file %s\n", filename);
+        return (fd);
+}
+
+/**
+ * copy_data - This function copies data from one file descriptor to another
+ * @source_fd: Is the file descriptor to copy data from
+ * @dest_fd: Is the file descriptor to copy data to
+ * Return: Number of bytes copied or -1 on failure
+ */
+ssize_t copy_data(int source_fd, int dest_fd)
+{
+        char *buffer;
+        ssize_t bytes_read, bytes_written;
+
+	buffer = malloc(sizeof(char) * BUFFER_SIZE);
 	if (buffer == NULL)
-		error_exit(EXIT_FAILURE, "Failed to allocate buffer", NULL);
-	return (buffer);
+	{
+		dprintf(STDERR_FILENO,
+			"Error: Can't write to fd %d\n", dest_fd);
+		exit(99);
+	}
+
+        while ((bytes_read = read(source_fd, buffer, BUFFER_SIZE)) > 0)
+        {
+                bytes_written = write(dest_fd, buffer, bytes_read);
+                if (bytes_written < bytes_read || bytes_written == -1)
+                {
+                        dprintf(STDERR_FILENO, "Error: Can't write to fd %d\n", dest_fd);
+                        return (-1);
+                }
+        }
+        if (bytes_read == -1)
+        {
+                dprintf(STDERR_FILENO, "Error: Can't read from fd %d\n", source_fd);
+                return (-1);
+        }
+        return (bytes_written);
 }
 
 /**
- * close_file - Closes the file descriptor `fd`.
- * @fd: Is the file descriptor
+ * copy_file - This function copies the content of a file to another file
+ * @file_from: Is the source file
+ * @file_to: Is the destination file
+ * Return: 1 on success, -1 on failure
  */
-void close_file(int fd)
+void copy_file(const char *file_from, const char *file_to)
 {
-	if (close(fd) == -1)
-		error_exit(EXIT_FAILURE, "Failed to close file", NULL);
+        int source_fd, dest_fd, ret_val;
+        struct stat st;
+
+        source_fd = open_file(file_from, O_RDONLY, 0);
+        fstat(source_fd, &st);
+
+        dest_fd = create_a_file(file_to, 0664);
+
+        copy_data(source_fd, dest_fd);
+
+        ret_val = close(source_fd);
+        if (ret_val == -1)
+                dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", source_fd);
+
+        ret_val = close(dest_fd);
+        if (ret_val == -1)
+                dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", dest_fd);
+
+        exit(EXIT_SUCCESS);
 }
 
 /**
- * error_exit - Prints an error message to standard error and exits with the
- *              given exit code.
- *
- * @code:    The exit code to use when exiting.
- * @message: The error message to print.
- * @file:    The name of the file associated with the error (or NULL if none).
- */
-void error_exit(int code, const char *message, const char *file)
-{
-	if (file != NULL)
-		dprintf(STDERR_FILENO, "Error: %s '%s'\n", message, file);
-	else
-		dprintf(STDERR_FILENO, "Error: %s\n", message);
-	exit(code);
-}
-
-/**
- * main - Copies the contents of one file to another file.
- *
- * @argc: The number of command-line arguments.
- * @argv: An array of command-line argument strings.
- *
- * Return: 0 on success, or a non-zero error code on failure.
+ * main - Is the entry point of this program
+ * @argc: Is the number of arguments(number of arguments)
+ * @argv: Is the argument vector(array of all arguments)
+ * Return: 0 on success, non-zero on failure
  */
 int main(int argc, char *argv[])
 {
-	const char *file_from = argv[1];
-	const char *file_to = argv[2];
-	ssize_t bytes_read, bytes_written;
-	int source_fd, dest_fd;
-	char *buffer;
+        if (argc != 3)
+        {
+                dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+                exit(EXIT_FAILURE);
+        }
 
-	if (argc != 3)
-		error_exit(EXIT_FAILURE, "Usage: cp file_from file_to", NULL);
-
-	/* Open the source file for reading */
-	source_fd = open(file_from, O_RDONLY);
-	if (source_fd == -1)
-		error_exit(EXIT_FAILURE, "Failed to open file", file_from);
-
-	/* Create the destination file (if it doesn't exist) for writing */
-	dest_fd = open(file_to, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (dest_fd == -1)
-		error_exit(EXIT_FAILURE, "Failed to create file", file_to);
-
-	/* Allocate a buffer for copying data */
-	buffer = create_buffer();
-
-	/* Copy data from the source file to the destination file */
-	while ((bytes_read = read(source_fd, buffer, BUFFER_SIZE)) > 0)
-	{
-		bytes_written = write(dest_fd, buffer, bytes_read);
-		if (bytes_written == -1 || bytes_written < bytes_read)
-			error_exit(EXIT_FAILURE, "Failed to write to file", file_to);
-	}
-	if (bytes_read == -1)
-		error_exit(EXIT_FAILURE, "Failed to read from file", file_from);
-
-	/* Free the buffer and close the file descriptors */
-	free(buffer);
-	close_file(source_fd);
-	close_file(dest_fd);
-
-	return (EXIT_SUCCESS);
+        copy_file(argv[1], argv[2]);
+        return (0);
 }
