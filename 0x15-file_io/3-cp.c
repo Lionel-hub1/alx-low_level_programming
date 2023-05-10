@@ -33,7 +33,7 @@ void close_file_descriptor(int fd)
 	if (result == -1)
 	{
 		/* If closing file descriptor fails */
-		dprintf(STDERR_FILENO, "Error: Can't close file descriptor %d\n", fd);
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
 		exit(100);
 	}
 }
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 	/* Check for correct argument count */
 	if (argc != 3)
 	{
-		dprintf(STDERR_FILENO, "Usage: cp source_file destination_file\n");
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
 		exit(97);
 	}
 
